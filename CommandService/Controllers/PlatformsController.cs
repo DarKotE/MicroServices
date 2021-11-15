@@ -7,7 +7,7 @@ namespace CommandService.Controllers;
 
 [Route("api/c/[controller]")]
 [ApiController]
-public class PlatformsController : ControllerBase
+public sealed class PlatformsController : ControllerBase
 {
     private readonly ICommandRepo _repo;
     private readonly IMapper _mapper;

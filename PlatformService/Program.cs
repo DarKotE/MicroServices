@@ -10,16 +10,15 @@ using PlatformService.Models;
 var builder = WebApplication.CreateBuilder(args);
 
 
-
 // Add services to the container.
 if (builder.Environment.IsDevelopment())
 {
     builder.Services.AddDbContext<AppDbContext>(options => options.UseInMemoryDatabase("InMemory"));
-
 }
 else
 {
-    builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("PlatformConn")));
+    builder.Services.AddDbContext<AppDbContext>(options =>
+        options.UseSqlServer(builder.Configuration.GetConnectionString("PlatformConn")));
 }
 
 builder.Services.AddScoped<IPlatformRepo, PlatformRepo>();
@@ -65,19 +64,31 @@ app.MapPost("api/platforms", async (
     {
         Console.WriteLine("Cant send sync command:" + e.Message);
     }
+
     try
     {
         var publishedDto = mapper.Map<PlatformPublishedDto>(returnDto);
-        messageBusClient.PublishNewPlatform(publishedDto with {Event = "Platform_Published"});
+        messageBusClient.PublishNewPlatform(publishedDto with { Event = "Platform_Published" });
     }
     catch (Exception e)
     {
         Console.WriteLine("Cant send async command:" + e.Message);
     }
+
     return saved
         ? Results.CreatedAtRoute("GetPlatformById", new { platform.Id }, returnDto)
         : Results.StatusCode(StatusCodes.Status500InternalServerError);
 });
+
+app.UseRouting();
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapGrpcService<GrpcPlatformService>();
+
+    endpoints.MapGet("/proto/platforms.proto",
+        async context => { await context.Response.WriteAsync(File.ReadAllText("Proto/platforms.proto")); });
+});
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -86,19 +97,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseRouting();
-app.UseEndpoints(endpoints =>
-{
-    endpoints.MapGrpcService<GrpcPlatformService>();
-
-    endpoints.MapGet("/proto/platforms.proto", async context =>
-    {
-        await context.Response.WriteAsync(File.ReadAllText("Proto/platforms.proto"));
-    });
-});
 //app.UseHttpsRedirection();
 
 TestDb.Populate(app, app.Environment.IsProduction());
 
 app.Run();
-

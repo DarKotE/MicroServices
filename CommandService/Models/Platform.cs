@@ -6,6 +6,6 @@ public record Platform
 {
     [Required, Key] public int Id { get; init; }
     [Required] public Guid OriginId { get; init; }
-    [Required] public string Name { get; init; }
-    public ICollection<Command> Commands { get; init; }
+    [Required] public string Name { get; init; } = null!;
+    public ICollection<Command>? Commands { get; init; }
 }

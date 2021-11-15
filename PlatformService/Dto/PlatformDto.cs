@@ -2,11 +2,11 @@
 
 namespace PlatformService.Dto;
 
-public record PlatformReadDto(Guid Id, string Name, decimal Cost);
+public sealed record PlatformReadDto(Guid Id, string Name, decimal Cost);
 
-public record PlatformCreateDto(
+public sealed record PlatformCreateDto(
     [property: Required] string Name,
     [property: Required] string Publisher,
     [property: Required] decimal Cost);
 
-public record PlatformPublishedDto(Guid Id, string Name, string Event = "");
+public sealed record PlatformPublishedDto(Guid Id, string Name, string Event = "");

@@ -10,8 +10,8 @@ public class AppDbContext: DbContext
         
     }
     
-    public DbSet<Platform> Platforms { get; set; }
-    public DbSet<Command> Commands { get; set; }
+    public DbSet<Platform> Platforms { get; set; } = null!;
+    public DbSet<Command> Commands { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

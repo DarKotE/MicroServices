@@ -4,7 +4,7 @@ using PlatformService.Models;
 
 namespace PlatformService.Mapping;
 
-public class PlatformsProfile : Profile
+public sealed class PlatformsProfile : Profile
 {
     public PlatformsProfile()
     {

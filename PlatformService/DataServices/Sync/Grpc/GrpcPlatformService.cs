@@ -4,7 +4,7 @@ using PlatformService.Data;
 
 namespace PlatformService.DataServices.Sync.Grpc;
 
-public class GrpcPlatformService : GrpcPlatform.GrpcPlatformBase
+public sealed class GrpcPlatformService : GrpcPlatform.GrpcPlatformBase
 {
     private readonly IPlatformRepo _repo;
     private readonly IMapper _mapper;
@@ -19,9 +19,9 @@ public class GrpcPlatformService : GrpcPlatform.GrpcPlatformBase
     {
         var response = new PlatformResponse();
         var platforms = _repo.GetAll();
-        
+
         response.Platform.AddRange(_mapper.Map<IEnumerable<GrpcPlatformModel>>(platforms));
-        
+
         return Task.FromResult(response);
     }
 }

@@ -9,9 +9,9 @@ public sealed class MessageBusSubscriber : BackgroundService
 {
     private readonly IConfiguration _configuration;
     private readonly IEventProcessor _eventProcessor;
-    private IConnection _connection;
-    private IModel _channel;
-    private string _queueName;
+    private readonly IConnection _connection;
+    private readonly IModel _channel;
+    private readonly string _queueName;
 
     public MessageBusSubscriber(
         IConfiguration configuration,
@@ -19,30 +19,32 @@ public sealed class MessageBusSubscriber : BackgroundService
     {
         _configuration = configuration;
         _eventProcessor = eventProcessor;
-        InitializeRabbitMQ();
+        (_connection, _channel, _queueName) = InitializeRabbitMq();
     }
 
-    private void InitializeRabbitMQ()
+    private (IConnection connection, IModel channel, string queueName) InitializeRabbitMq()
     {
         var factory = new ConnectionFactory
         {
             HostName = _configuration["RabbitMQHost"],
             Port = int.Parse(_configuration["RabbitMQPort"]),
         };
-        _connection = factory.CreateConnection();
-        _channel = _connection.CreateModel();
-        _channel.ExchangeDeclare("trigger", ExchangeType.Fanout);
-        _queueName = _channel.QueueDeclare().QueueName;
-        _channel.QueueBind(_queueName, "trigger", "");
-        _connection.ConnectionShutdown += (object sender, ShutdownEventArgs args) =>
+        var connection = factory.CreateConnection();
+        var channel = connection.CreateModel();
+        channel.ExchangeDeclare("trigger", ExchangeType.Fanout);
+        var queueName = channel.QueueDeclare().QueueName;
+        channel.QueueBind(queueName, "trigger", "");
+        connection.ConnectionShutdown += (_, _) =>
             Console.WriteLine("rbmq connection is shutting down");
+        
+        return (connection, channel, queueName);
     }
     
     protected override Task ExecuteAsync(CancellationToken stoppingToken)
     {
         stoppingToken.ThrowIfCancellationRequested();
         var consumer = new EventingBasicConsumer(_channel);
-        consumer.Received += (moduleHandle, ea) =>
+        consumer.Received += (_, ea) =>
         {
             var body = ea.Body;
             var message = Encoding.UTF8.GetString(body.ToArray());

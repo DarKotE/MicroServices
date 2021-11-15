@@ -5,7 +5,7 @@ using PlatformService;
 
 namespace CommandService.DataServices.Sync.Grpc;
 
-public class PlatformDataClient : IPlatformDataClient
+public sealed class PlatformDataClient : IPlatformDataClient
 {
     private readonly IConfiguration _configuration;
     private readonly IMapper _mapper;

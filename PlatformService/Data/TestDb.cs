@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.OpenApi.Writers;
 using PlatformService.Models;
 
 namespace PlatformService.Data;

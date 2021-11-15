@@ -5,14 +5,14 @@ using PlatformService.Dto;
 
 namespace PlatformService.DataServices.Sync.Http;
 
-public class HttpCommandClient : ICommandClient
+public sealed class HttpCommandClient : ICommandClient
 {
     private readonly HttpClient _httpClient;
     private readonly IConfiguration _config;
 
     public HttpCommandClient(HttpClient httpClient, IConfiguration config)
         => (_httpClient, _config) = (httpClient, config);
-    
+
     public async Task SendPlatform(PlatformReadDto platform)
     {
         var httpContent = new StringContent(

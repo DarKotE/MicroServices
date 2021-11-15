@@ -12,8 +12,8 @@ namespace CommandService.Models;
 public record Command
 {
     [Required, Key] public int Id { get; init; }
-    [Required] public string HowTo { get; init; }
-    [Required] public string CommandLine { get; init; }
+    [Required] public string HowTo { get; init; } = null!;
+    [Required] public string CommandLine { get; init; } = null!;
     [Required] public int PlatformId { get; init; }
-    public Platform Platform { get; init; }
+    public Platform? Platform { get; init; }
 }

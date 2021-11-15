@@ -2,7 +2,7 @@
 
 namespace CommandService.Data;
 
-public class CommandRepo : ICommandRepo
+public sealed class CommandRepo : ICommandRepo
 {
     private readonly AppDbContext _context;
 
